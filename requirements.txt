@@ -1,0 +1,8 @@
+# Verified together on 2026-11-02 (Python 3.12).
+playwright==1.64.1
+pytest==9.2.0
+pytest-playwright==0.10.0
+pytest-bdd==9.0.1
+pytest-html==4.2.0
+pytest-xdist==3.8.0
+pytest-rerunfailures==16.7

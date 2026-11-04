@@ -1,0 +1,57 @@
+# B3.5 - fill every TODO, then RENAME this file to ci.yml (remove ".todo"), push, and watch the Actions tab.
+# It is called ci.yml.todo until then so GitHub does not try to run a half-written workflow.
+name: CI
+
+on:
+  # TODO: run on push to main, on every pull request, and manually (3 triggers)
+
+env:
+  # Each job starts its own Toolshop in Docker (toolshop/start.sh). The public site sits
+  # behind Cloudflare, which blocks browsers running on GitHub's servers.
+  BASE_URL: http://localhost:4200
+  API_URL: http://localhost:8091
+  GITHUB_API_URL: https://api.github.com
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   # GitHub gives every workflow this token
+
+jobs:
+  test:
+    name: test (${{ matrix.browser }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: # TODO: true or false? why?
+      matrix:
+        browser: # TODO: the 3 browsers
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Start Toolshop containers
+        run: docker compose -f toolshop/docker-compose.yml up -d   # the UI compiles while we install
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install browser
+        run: playwright install --with-deps ${{ matrix.browser }}
+
+      - name: Wait for Toolshop and load seed data
+        run: bash toolshop/start.sh
+
+      - name: Run tests
+        # TODO: run only the smoke tests first (-m smoke), on the matrix browser,
+        #       2 workers, 1 rerun, trace + screenshot only on failure, self-contained HTML report
+        run: pytest
+
+      - name: Upload report and traces
+        uses: actions/upload-artifact@v4
+        if: # TODO: when must this step run?
+        with:
+          name: # TODO: unique per browser
+          path: |
+            report.html
+            test-results/
+          retention-days: 7

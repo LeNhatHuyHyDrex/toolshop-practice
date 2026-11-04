@@ -1,0 +1,4 @@
+[
+  {"keyword": "pliers", "must_contain": "pliers"},
+  {"keyword": "hammer", "must_contain": "hammer"}
+]
