@@ -11,13 +11,14 @@ class CartPage(BasePage):
 
     def __init__(self, page):
         super().__init__(page)
-        # TODO B1.4: product_titles, quantities, line_prices, total
-        # TODO B1.6: continue_shopping
+        self.product_titles = page.get_by_test_id("product-title")
+        self.quantities = page.get_by_test_id("product-quantity")
+        self.line_prices = page.get_by_test_id("line-price")
+        self.total = page.get_by_test_id("cart-total")
+        self.continue_shopping = page.get_by_test_id("continue-shopping")
 
     def line_totals(self) -> list[float]:
-        # TODO B1.4
-        raise NotImplementedError("B1.4")
+        return [money(t) for t in self.line_prices.all_inner_texts()]
 
     def total_value(self) -> float:
-        # TODO B1.4
-        raise NotImplementedError("B1.4")
+        return money(self.total.inner_text())
