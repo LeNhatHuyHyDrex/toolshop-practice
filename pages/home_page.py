@@ -13,11 +13,14 @@ class HomePage(BasePage):
         super().__init__(page)
         self.search_box = page.get_by_test_id("search-query")
         self.search_result_count = page.get_by_test_id("search-result-count")
+        # B1.1
         self.search_button = page.get_by_test_id("search-submit")
         self.search_caption = page.get_by_test_id("search-caption")
         self.search_completed = page.get_by_test_id("search_completed")
         self.product_names = page.get_by_test_id("product-name")
+        # B1.2
         self.no_results = page.get_by_test_id("no-results")
+        # B1.7
         self.sort_select = page.get_by_test_id("sort")
         self.sorting_completed = page.get_by_test_id("sorting_completed")
         self.product_prices = page.get_by_test_id("product-price")
@@ -50,7 +53,7 @@ class HomePage(BasePage):
     def open_product(self, name: str):
         from pages.product_page import ProductPage
 
-        self.product_card(name).click()
+        self.product_card(name).first.click()
         return ProductPage(self.page)
 
     def prices(self) -> list[float]:

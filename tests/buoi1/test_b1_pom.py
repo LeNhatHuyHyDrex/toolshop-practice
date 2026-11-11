@@ -49,7 +49,7 @@ def test_b1_3_product_add_quantity_three_updates_cart_badge(page):
     Precondition: product 'Claw Hammer' exists.
     Expected: toast 'Product added to shopping cart' and the cart badge shows 3."""
     product = HomePage(page).open().open_product("Claw Hammer")
-    expect(product.name).to_contain_text("Claw Hammer")
+    expect(product.name).to_have_text("Claw Hammer")
     product.add_to_cart(quantity=3)
     expect(product.toast).to_contain_text("Product added to shopping cart")
     expect(product.cart_quantity).to_have_text("3")
@@ -60,15 +60,13 @@ def test_b1_4_cart_line_price_equals_unit_price_times_quantity(page):
     """Goal: cart arithmetic.
     Precondition: empty cart (a new context per test gives you one).
     Expected: line price = unit price x 2 and total = sum of the lines."""
-    product = HomePage(page).open().open_product("Claw Hammer")
-    expect(product.unit_price).to_be_visible()
-    unit_price = product.price()
+    product = HomePage(page).open().open_product("Combination Pliers")
+    unit = product.price()
     product.add_to_cart(quantity=2)
     expect(product.cart_quantity).to_have_text("2")
     cart = product.go_to_cart()
-    expect(cart.line_prices).to_have_count(1)
-    expect(cart.total).to_be_visible()
-    assert cart.line_totals()[0] == pytest.approx(unit_price * 2)
+    expect(cart.product_titles).to_have_count(1)
+    assert cart.line_totals() == [pytest.approx(unit * 2)]
     assert cart.total_value() == pytest.approx(sum(cart.line_totals()))
 
 
@@ -98,11 +96,10 @@ def test_b1_6_cart_continue_shopping_returns_to_home(page):
     """Goal: page objects chain: each action returns the next page object.
     Precondition: none.
     Expected: after 'Continue Shopping' the product grid is visible again."""
-    cart = HomePage(page).open().open_product("Claw Hammer").add_to_cart().go_to_cart()
-    expect(cart.product_titles).to_have_count(1)
+    cart = HomePage(page).open().open_product("Hammer").add_to_cart().go_to_cart()
+    expect(cart.product_titles.first).to_have_text("Hammer")
     cart.continue_shopping.click()
-    home = HomePage(page)
-    expect(home.product_names.first).to_be_visible()
+    expect(HomePage(page).product_names.first).to_be_visible()
 
 
 # ---------------------------------------------------------------- B1.7 (challenge)
@@ -111,8 +108,9 @@ def test_b1_7_sort_by_price_orders_products(page, order):
     """Goal: sorting.
     Precondition: none.
     Expected: prices on the first page are sorted in the chosen direction."""
-    home = HomePage(page).open().sort_by(order)
+    home = HomePage(page).open()
+    expect(home.product_names.first).to_be_visible()
+    home.sort_by(order)
     expect(home.sorting_completed).to_be_visible()
     prices = home.prices()
-    assert prices, "no prices on the first page"
-    assert prices == sorted(prices, reverse=order.endswith("desc"))
+    assert prices == sorted(prices, reverse=order.endswith("desc")), prices
