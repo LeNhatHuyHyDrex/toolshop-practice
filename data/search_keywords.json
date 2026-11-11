@@ -1,4 +1,6 @@
 [
   {"keyword": "pliers", "must_contain": "pliers"},
-  {"keyword": "hammer", "must_contain": "hammer"}
+  {"keyword": "hammer", "must_contain": "hammer"},
+  {"keyword": "saw", "must_contain": "saw"},
+  {"keyword": "wrench", "must_contain": "wrench"}
 ]
